@@ -1,0 +1,20 @@
+{
+    "appKeys": {},
+    "capabilities": [
+        "location"
+    ],
+    "companyName": "ddr2108",
+    "longName": "Battery Saver Watchface",
+    "projectType": "native",
+    "resources": {
+        "media": []
+    },
+    "sdkVersion": "2",
+    "shortName": "Battery Saver Watchface",
+    "uuid": "3b6401bd-2d3b-41b6-b65d-ad67e35cdae6",
+    "versionCode": 1,
+    "versionLabel": "1.0",
+    "watchapp": {
+        "watchface": true
+    }
+}
