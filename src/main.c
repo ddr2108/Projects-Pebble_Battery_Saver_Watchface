@@ -5,9 +5,34 @@ static Window *mainWindow;
 static TextLayer *timeLayer;
 static TextLayer *dateLayer;
 static TextLayer *dayLayer;
+static TextLayer *weatherLayer;
 
+static Layer *batteryLevelTop;
+static Layer *batteryLevelMiddle;
+static Layer *batteryLevelBottom;
+
+static Layer *s_canvas_layer;
+
+static void updateBatteryLevelEdges(Layer *layer, GContext *ctx) {
+  //get the size
+  GRect bounds = layer_get_bounds(layer);
+
+  // Draw the line
+  graphics_context_set_fill_color(ctx, GColorWhite);
+  graphics_fill_rect(ctx, bounds, 0, GCornerNone);
+}
+
+static void updateBatteryLevelMiddle(Layer *layer, GContext *ctx) {
+  //get the size
+  GRect bounds = layer_get_bounds(layer);
+
+  // Draw the line
+  graphics_context_set_fill_color(ctx, GColorBlack);
+  graphics_fill_rect(ctx, bounds, 0, GCornerNone);
+}
 
 static void mainWindowInit(Window *window){
+
   ////////////////Set up window///////////////////////
   //window color
   window_set_background_color(mainWindow, GColorBlack);
@@ -50,6 +75,23 @@ static void mainWindowInit(Window *window){
   
   //add to screen
   layer_add_child(window_get_root_layer(mainWindow), text_layer_get_layer(dayLayer));
+  
+  ///////////Battery Levels//////////////////////////////////////
+  //create lines
+  batteryLevelTop = layer_create(GRect(2, 115, 144, 5));
+  batteryLevelMiddle = layer_create(GRect(2, 120, 144, 8));
+  batteryLevelBottom = layer_create(GRect(2, 128, 144, 5));
+
+  //add to window
+  layer_add_child(window_get_root_layer(mainWindow), batteryLevelTop);
+  layer_add_child(window_get_root_layer(mainWindow), batteryLevelMiddle);
+  layer_add_child(window_get_root_layer(mainWindow), batteryLevelBottom);
+  
+  //functions that will do the drawing
+  layer_set_update_proc(batteryLevelTop, updateBatteryLevelEdges);
+  layer_set_update_proc(batteryLevelMiddle, updateBatteryLevelMiddle);
+  layer_set_update_proc(batteryLevelBottom, updateBatteryLevelEdges);
+
 }
 
 static void mainWindowDeinit(Window *window){
@@ -85,7 +127,7 @@ static void updateTime(){
   //buffer to hold date
   static char dateBuffer[] = "December 25";
   //format date
-  //strftime(dateBuffer, sizeof(dateBuffer), "%b %e", curTimeLocal);  
+  strftime(dateBuffer, sizeof(dateBuffer), "%B %e", curTimeLocal);  
     
   //print to screen
   text_layer_set_text(dateLayer, dateBuffer);
@@ -93,7 +135,7 @@ static void updateTime(){
   //buffer
   static char dayBuffer[] = "Wednesday";
   //format day
-  //strftime(dayBuffer, sizeof(dayBuffer), "%A", curTimeLocal);
+  strftime(dayBuffer, sizeof(dayBuffer), "%A", curTimeLocal);
   
   //print to screen
   text_layer_set_text(dayLayer, dayBuffer);    
