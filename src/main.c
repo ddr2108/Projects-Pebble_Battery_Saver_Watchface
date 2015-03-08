@@ -1,35 +1,8 @@
 #include <pebble.h>
- 
-//Layers
-static Window *mainWindow;
-static TextLayer *timeLayer;
-static TextLayer *dateLayer;
-static TextLayer *dayLayer;
-static TextLayer *weatherLayer;
+#include "main.h"
+#include "time-date.h"
+#include "battery.h"
 
-static Layer *batteryLevelTop;
-static Layer *batteryLevelMiddle;
-static Layer *batteryLevelBottom;
-
-static Layer *s_canvas_layer;
-
-static void updateBatteryLevelEdges(Layer *layer, GContext *ctx) {
-  //get the size
-  GRect bounds = layer_get_bounds(layer);
-
-  // Draw the line
-  graphics_context_set_fill_color(ctx, GColorWhite);
-  graphics_fill_rect(ctx, bounds, 0, GCornerNone);
-}
-
-static void updateBatteryLevelMiddle(Layer *layer, GContext *ctx) {
-  //get the size
-  GRect bounds = layer_get_bounds(layer);
-
-  // Draw the line
-  graphics_context_set_fill_color(ctx, GColorBlack);
-  graphics_fill_rect(ctx, bounds, 0, GCornerNone);
-}
 
 static void mainWindowInit(Window *window){
 
@@ -101,95 +74,17 @@ static void mainWindowDeinit(Window *window){
   text_layer_destroy(dayLayer);
 }
 
-static void updateTime(){
-  //get the time for local time zone
-  time_t curTime = time(NULL);
-  struct tm* curTimeLocal = localtime(&curTime);
 
-  ///////////////Set up time////////////////////////
-  //buffer to hold time
-  static char timeBuffer[] = "00:00A";  
-  //format the time if 24 hours style
-  if (clock_is_24h_style()){
-    strftime(timeBuffer, sizeof(timeBuffer), "%H:%M", curTimeLocal);
-  }else{
-    //format time am or pm
-    if (curTimeLocal->tm_hour<12){
-      strftime(timeBuffer, sizeof(timeBuffer), "%I:%M", curTimeLocal);
-    }else{
-      strftime(timeBuffer, sizeof(timeBuffer), "%I:%M", curTimeLocal);      
-    }
-  }
 
-  //print to screen
-  text_layer_set_text(timeLayer, timeBuffer);
-  ////////////Set up Date//////////////////////////////
-  //buffer to hold date
-  static char dateBuffer[] = "December 25";
-  //format date
-  strftime(dateBuffer, sizeof(dateBuffer), "%B %e", curTimeLocal);  
-    
-  //print to screen
-  text_layer_set_text(dateLayer, dateBuffer);
-  //////////Set up Day////////////////////////////////
-  //buffer
-  static char dayBuffer[] = "Wednesday";
-  //format day
-  strftime(dayBuffer, sizeof(dayBuffer), "%A", curTimeLocal);
-  
-  //print to screen
-  text_layer_set_text(dayLayer, dayBuffer);    
-}
 
-static void initStandby(){
-  
-  //check if it should be in standby at inital turn on of face
-  
-}
 
-bool standbyFlag = false;
-static void standby(){
-  //get the time for local time zone
-  time_t curTime = time(NULL);
-  struct tm* curTimeLocal = localtime(&curTime);
-  
-  //check if should put in standby mode
-  if (curTimeLocal->tm_hour==23 && curTimeLocal->tm_min==00){
-    standbyFlag = true;
-    
-    //reset text box
-    text_layer_set_text(dayLayer,"");
-    text_layer_set_text(timeLayer,"");
-    text_layer_set_text(dateLayer,"");    
-  } else if (curTimeLocal->tm_hour==6 && curTimeLocal->tm_min==0){
-    standbyFlag = false;
-  } 
-  
-}
 
-static void showWeather(){
-  
-  
-}
-
-static void hideWeather(){
-  
-  
-}
 
 static void battery_handler(BatteryChargeState charge_state) {
   
 }
 
-static void tick_handler(struct tm *tick_time, TimeUnits units_changed){
-  //check if should be in standby
-  standby();
-  
-  //update the time
-  if (standbyFlag==false){
-    updateTime();
-  }
-}
+
 
 static void init(){
   ///////////////Set up window//////////////////////////////
